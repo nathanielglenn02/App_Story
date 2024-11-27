@@ -56,9 +56,15 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // Tampilkan ProgressBar
+            binding.progressBar.visibility = View.VISIBLE
+
             // API call untuk login
             ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    // Sembunyikan ProgressBar
+                    binding.progressBar.visibility = View.GONE
+
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse != null && !loginResponse.error) {
@@ -108,6 +114,9 @@ class LoginFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    // Sembunyikan ProgressBar
+                    binding.progressBar.visibility = View.GONE
+
                     Toast.makeText(
                         requireContext(),
                         "Error: ${t.message}",
