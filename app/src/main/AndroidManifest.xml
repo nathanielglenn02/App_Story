@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 
     <application
         android:allowBackup="true"
@@ -14,6 +17,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App_Story"
         tools:targetApi="31">
+
+        <!-- AddFileProvider configuration -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />  <!-- Reference to your file_paths.xml -->
+    </provider>
+
+        <activity
+            android:name=".ui.AddStoryActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.DetailActivity"
             android:exported="false" />

@@ -29,7 +29,7 @@ class HomeActivity : AppCompatActivity() {
 
         // Inisialisasi RecyclerView dan tombol tambah cerita
         setupRecyclerView()
-//        setupFab()
+        setupFab()
 
         // Memuat data cerita dari API
         loadStories()
@@ -52,13 +52,13 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-//    private fun setupFab() {
-//        // Tombol tambah cerita
-//        binding.fabAddStory.setOnClickListener {
-//            val intent = Intent(this, AddStoryActivity::class.java)
-//            startActivity(intent)
-//        }
-//    }
+    private fun setupFab() {
+        // Tombol tambah cerita
+        binding.fabAddStory.setOnClickListener {
+            val intent = Intent(this, AddStoryActivity::class.java)
+            startActivity(intent)
+        }
+    }
 
     private fun loadStories() {
         showLoading(true)
@@ -90,6 +90,7 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private suspend fun getToken(): String {
         // Mengambil token dari DataStore

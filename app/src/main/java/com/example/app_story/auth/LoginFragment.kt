@@ -69,10 +69,11 @@ class LoginFragment : Fragment() {
                         val loginResponse = response.body()
                         if (loginResponse != null && !loginResponse.error) {
                             val token = loginResponse.loginResult.token
+                            val name = loginResponse.loginResult.name // Ambil nama pengguna dari respons
 
                             lifecycleScope.launch {
-                                // Simpan token ke DataStore
-                                userPreference.saveToken(token)
+                                // Simpan token dan nama ke DataStore
+                                userPreference.saveUserData(token, name)
 
                                 // Ambil kembali token untuk memastikan tersimpan
                                 val savedToken = userPreference.getToken().first()

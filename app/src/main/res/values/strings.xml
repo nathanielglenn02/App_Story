@@ -4,6 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="password_error_message">Password harus terdiri dari minimal 8 karakter</string>
     <string name="photo">Photo</string>
+    <string name="add_story">Add Story</string>
 
 
 </resources>
