@@ -2,11 +2,16 @@ package com.example.app_story.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.app_story.MainActivity
+import com.example.app_story.R
+import com.example.app_story.auth.LoginFragment
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.ActivityHomeBinding
 import com.example.app_story.model.StoryResponse
@@ -27,6 +32,9 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set up toolbar
+        setSupportActionBar(binding.toolbar)  // Set toolbar sebagai ActionBar
+
         // Inisialisasi RecyclerView dan tombol tambah cerita
         setupRecyclerView()
         setupFab()
@@ -34,6 +42,38 @@ class HomeActivity : AppCompatActivity() {
         // Memuat data cerita dari API
         loadStories()
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_home, menu)  // Inflate menu_home
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                logout()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun logout() {
+        lifecycleScope.launch {
+            // Hapus token
+            UserPreference.getInstance(applicationContext).clearUserData()
+
+            // Kembali ke MainActivity untuk LoginFragment
+            val intent = Intent(this@HomeActivity, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+
+            // Tutup HomeActivity
+            finish()
+        }
+    }
+
+
 
     private fun setupRecyclerView() {
         storyAdapter = StoryAdapter(emptyList()) { story ->
@@ -91,7 +131,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-
     private suspend fun getToken(): String {
         // Mengambil token dari DataStore
         return UserPreference.getInstance(applicationContext).getToken().first() ?: ""
@@ -106,4 +145,7 @@ class HomeActivity : AppCompatActivity() {
         // Menampilkan pesan Toast
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    
 }
+

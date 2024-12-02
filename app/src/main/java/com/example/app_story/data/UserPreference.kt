@@ -30,12 +30,12 @@ class UserPreference private constructor(private val dataStore: androidx.datasto
         }
     }
 
-    // Menyimpan token dan nama pengguna
+    // Menyimpan token, nama pengguna, dan status login
     suspend fun saveUserData(token: String, name: String) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
             preferences[NAME_KEY] = name
-            preferences[LOGIN_STATE_KEY] = true
+            preferences[LOGIN_STATE_KEY] = true // Menandakan pengguna sudah login
         }
     }
 
@@ -53,25 +53,25 @@ class UserPreference private constructor(private val dataStore: androidx.datasto
         }
     }
 
-    // Menyimpan hanya token (misalnya untuk logout)
+    // Menyimpan hanya token (misalnya untuk kasus token refresh)
     suspend fun saveToken(token: String) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
-            preferences[LOGIN_STATE_KEY] = true
+            preferences[LOGIN_STATE_KEY] = true // Menandakan pengguna sudah login
         }
     }
 
-    // Menghapus token dan data login
+    // Menghapus token, nama pengguna, dan status login (untuk logout)
     suspend fun clearUserData() {
         dataStore.edit { preferences ->
-            preferences.clear()
+            preferences.clear() // Menghapus seluruh data, termasuk status login
         }
     }
 
     // Memeriksa apakah pengguna sudah login
     fun isLoggedIn(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
-            preferences[LOGIN_STATE_KEY] ?: false
+            preferences[LOGIN_STATE_KEY] ?: false // Default false jika belum login
         }
     }
 }

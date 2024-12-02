@@ -3,7 +3,6 @@ package com.example.app_story.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -11,12 +10,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.app_story.R
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.ActivityAddStoryBinding
 import com.example.app_story.network.ApiConfig
 import com.example.app_story.model.UploadResponse
-import kotlinx.coroutines.flow.collect
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

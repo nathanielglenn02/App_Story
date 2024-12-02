@@ -56,76 +56,45 @@ class LoginFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            // Tampilkan ProgressBar
             binding.progressBar.visibility = View.VISIBLE
 
-            // API call untuk login
             ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    // Sembunyikan ProgressBar
                     binding.progressBar.visibility = View.GONE
 
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         if (loginResponse != null && !loginResponse.error) {
-                            val token = loginResponse.loginResult.token
-                            val name = loginResponse.loginResult.name // Ambil nama pengguna dari respons
-
                             lifecycleScope.launch {
-                                // Simpan token dan nama ke DataStore
-                                userPreference.saveUserData(token, name)
+                                val userPreference = UserPreference.getInstance(requireContext())
+                                userPreference.saveUserData(
+                                    loginResponse.loginResult.token,
+                                    loginResponse.loginResult.name
+                                )
 
-                                // Ambil kembali token untuk memastikan tersimpan
-                                val savedToken = userPreference.getToken().first()
-                                if (savedToken != null) {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Login berhasil!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                Toast.makeText(requireContext(), "Login berhasil!", Toast.LENGTH_SHORT).show()
 
-                                    // Pindah ke HomeActivity
-                                    val intent = Intent(requireContext(), HomeActivity::class.java)
-                                    intent.flags =
-                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                    startActivity(intent)
-                                    requireActivity().finish()
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Gagal menyimpan token.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                // Pindah ke HomeActivity
+                                val intent = Intent(requireContext(), HomeActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                                requireActivity().finish()
                             }
                         } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Login gagal: ${loginResponse?.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(), "Login gagal", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Terjadi kesalahan: ${response.message()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "Login gagal", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    // Sembunyikan ProgressBar
                     binding.progressBar.visibility = View.GONE
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Error: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         }
+
 
         // Navigate to RegisterFragment
         binding.tvRegisterLink.setOnClickListener {
