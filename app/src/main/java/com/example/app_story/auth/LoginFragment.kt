@@ -8,15 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.example.app_story.R
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.FragmentLoginBinding
 import com.example.app_story.model.LoginResponse
 import com.example.app_story.network.ApiConfig
 import com.example.app_story.ui.HomeActivity
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.first
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,58 +44,87 @@ class LoginFragment : Fragment() {
             val email = binding.edLoginEmail.text.toString().trim()
             val password = binding.edLoginPassword.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Email dan Password tidak boleh kosong",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
+            if (validateInput(email, password)) {
+                showLoading(true) // Tampilkan ProgressBar dan nonaktifkan tombol
+                performLogin(email, password)
             }
+        }
+    }
 
-            binding.progressBar.visibility = View.VISIBLE
+    private fun validateInput(email: String, password: String): Boolean {
+        var isValid = true
 
-            ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    binding.progressBar.visibility = View.GONE
-
-                    if (response.isSuccessful) {
-                        val loginResponse = response.body()
-                        if (loginResponse != null && !loginResponse.error) {
-                            lifecycleScope.launch {
-                                val userPreference = UserPreference.getInstance(requireContext())
-                                userPreference.saveUserData(
-                                    loginResponse.loginResult.token,
-                                    loginResponse.loginResult.name
-                                )
-
-                                Toast.makeText(requireContext(), "Login berhasil!", Toast.LENGTH_SHORT).show()
-
-                                // Pindah ke HomeActivity
-                                val intent = Intent(requireContext(), HomeActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                startActivity(intent)
-                                requireActivity().finish()
-                            }
-                        } else {
-                            Toast.makeText(requireContext(), "Login gagal", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "Login gagal", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+        if (email.isEmpty()) {
+            binding.edLoginEmail.error = "Email tidak boleh kosong"
+            isValid = false
+        } else if (binding.edLoginEmail.error != null) {
+            isValid = false // Error dari CustomEmailEditText
         }
 
+        if (password.isEmpty()) {
+            binding.edLoginPassword.error = "Password tidak boleh kosong"
+            isValid = false
+        }
 
-        // Navigate to RegisterFragment
-        binding.tvRegisterLink.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        return isValid
+    }
+
+    private fun performLogin(email: String, password: String) {
+        ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                showLoading(false) // Sembunyikan ProgressBar dan aktifkan tombol
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    if (loginResponse != null && !loginResponse.error) {
+                        val token = loginResponse.loginResult.token
+                        val name = loginResponse.loginResult.name
+
+                        lifecycleScope.launch {
+                            userPreference.saveUserData(token, name)
+
+                            Toast.makeText(
+                                requireContext(),
+                                "Login berhasil!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // Pindah ke HomeActivity
+                            val intent = Intent(requireContext(), HomeActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            requireActivity().finish()
+                        }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Login gagal: ${loginResponse?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Terjadi kesalahan: ${response.message()}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                showLoading(false) // Sembunyikan ProgressBar dan aktifkan tombol
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.btnLogin.isEnabled = false // Nonaktifkan tombol login
+        } else {
+            binding.progressBar.visibility = View.GONE
+            binding.btnLogin.isEnabled = true // Aktifkan tombol login
         }
     }
 
