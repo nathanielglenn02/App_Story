@@ -15,6 +15,9 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Atur transitionName untuk elemen gambar
+        binding.ivDetailPhoto.transitionName = "storyImage"
+
         // Ambil data dari Intent
         val name = intent.getStringExtra(EXTRA_NAME)
         val description = intent.getStringExtra(EXTRA_DESCRIPTION)
@@ -28,6 +31,7 @@ class DetailActivity : AppCompatActivity() {
             .placeholder(R.drawable.ic_placeholder)
             .into(binding.ivDetailPhoto)
     }
+
 
     companion object {
         const val EXTRA_NAME = "extra_name"

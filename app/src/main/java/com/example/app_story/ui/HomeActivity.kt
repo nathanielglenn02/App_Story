@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app_story.MainActivity
@@ -76,14 +77,20 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun setupRecyclerView() {
-        storyAdapter = StoryAdapter(emptyList()) { story ->
-            // Pindah ke DetailActivity dengan data cerita
+        storyAdapter = StoryAdapter(emptyList()) { story, holder ->
             val intent = Intent(this, DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_NAME, story.name)
                 putExtra(DetailActivity.EXTRA_DESCRIPTION, story.description)
                 putExtra(DetailActivity.EXTRA_PHOTO_URL, story.photoUrl)
             }
-            startActivity(intent)
+
+            // Shared Element Animation menggunakan holder
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                this,
+                holder.binding.ivItemPhoto, // Elemen gambar dari ViewHolder
+                "storyImage" // Nama transisi sesuai XML
+            )
+            startActivity(intent, options.toBundle())
         }
 
         binding.rvStories.apply {
@@ -114,10 +121,14 @@ class HomeActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             val stories = response.body()?.listStory ?: emptyList()
                             storyAdapter.updateStories(stories)
+
+                            // Panggil animasi
+                            animateRecyclerView()
                         } else {
                             showToast("Gagal memuat data: ${response.message()}")
                         }
                     }
+
 
                     override fun onFailure(call: Call<StoryResponse>, t: Throwable) {
                         showLoading(false)
@@ -146,6 +157,17 @@ class HomeActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    
+    private fun animateRecyclerView() {
+        // Set alpha awal RecyclerView menjadi 0
+        binding.rvStories.alpha = 0f
+
+        // Mulai animasi fade-in
+        binding.rvStories.animate()
+            .alpha(1f) // Set alpha akhir menjadi 1
+            .setDuration(1000) // Durasi animasi 1 detik
+            .setListener(null) // Pastikan tidak ada listener tambahan
+            .start()
+    }
+
 }
 

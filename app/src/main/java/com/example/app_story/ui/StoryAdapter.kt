@@ -10,35 +10,34 @@ import com.example.app_story.model.Story
 
 class StoryAdapter(
     private var stories: List<Story>,
-    private val onItemClick: (Story) -> Unit // Callback untuk item klik
+    private val onItemClick: (Story, StoryViewHolder) -> Unit // Callback untuk item klik dengan ViewHolder
 ) : RecyclerView.Adapter<StoryAdapter.StoryViewHolder>() {
 
     class StoryViewHolder(
-        private val binding: ItemStoryBinding,
-        private val onItemClick: (Story) -> Unit
+        val binding: ItemStoryBinding // Perlu akses langsung ke elemen ViewHolder
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(story: Story) {
+        fun bind(story: Story, onItemClick: (Story, StoryViewHolder) -> Unit) {
             binding.tvItemName.text = story.name
             Glide.with(binding.ivItemPhoto.context)
                 .load(story.photoUrl)
                 .placeholder(R.drawable.ic_placeholder) // Placeholder untuk gambar
                 .into(binding.ivItemPhoto)
 
-            // Listener klik item
+            // Listener klik item, kirim ViewHolder
             binding.root.setOnClickListener {
-                onItemClick(story)
+                onItemClick(story, this)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return StoryViewHolder(binding, onItemClick)
+        return StoryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        holder.bind(stories[position])
+        holder.bind(stories[position], onItemClick)
     }
 
     override fun getItemCount(): Int = stories.size
@@ -49,3 +48,4 @@ class StoryAdapter(
         notifyDataSetChanged()
     }
 }
+

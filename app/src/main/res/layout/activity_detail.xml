@@ -15,7 +15,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/photo" />
+        android:contentDescription="@string/photo"
+        android:transitionName="storyImage"/>
 
     <!-- Nama Pengguna -->
     <TextView
