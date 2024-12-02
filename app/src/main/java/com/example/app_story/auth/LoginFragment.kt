@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.app_story.R
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.FragmentLoginBinding
 import com.example.app_story.model.LoginResponse
@@ -45,6 +47,10 @@ class LoginFragment : Fragment() {
                 showLoading(true)
                 performLogin(email, password)
             }
+        }
+
+        binding.tvRegisterLink.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
 

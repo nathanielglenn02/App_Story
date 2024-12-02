@@ -7,7 +7,7 @@
     <string name="add_story">Add Story</string>
     <string name="invalid_email_error">Format email tidak valid</string>
     <string name="email_hint">Masukkan Email</string>
-
+    <string name="belum_punya_akun_register">Belum punya akun? Register</string>
 
 
 </resources>
