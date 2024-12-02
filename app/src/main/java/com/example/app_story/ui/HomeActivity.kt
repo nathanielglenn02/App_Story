@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app_story.MainActivity
 import com.example.app_story.R
-import com.example.app_story.auth.LoginFragment
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.ActivityHomeBinding
 import com.example.app_story.model.StoryResponse
@@ -32,20 +31,14 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Set up toolbar
-        setSupportActionBar(binding.toolbar)  // Set toolbar sebagai ActionBar
-
-        // Inisialisasi RecyclerView dan tombol tambah cerita
+        setSupportActionBar(binding.toolbar)
         setupRecyclerView()
         setupFab()
-
-        // Memuat data cerita dari API
         loadStories()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_home, menu)  // Inflate menu_home
+        menuInflater.inflate(R.menu.menu_home, menu)
         return true
     }
 
@@ -61,20 +54,13 @@ class HomeActivity : AppCompatActivity() {
 
     private fun logout() {
         lifecycleScope.launch {
-            // Hapus token
             UserPreference.getInstance(applicationContext).clearUserData()
-
-            // Kembali ke MainActivity untuk LoginFragment
             val intent = Intent(this@HomeActivity, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
-
-            // Tutup HomeActivity
             finish()
         }
     }
-
-
 
     private fun setupRecyclerView() {
         storyAdapter = StoryAdapter(emptyList()) { story, holder ->
@@ -84,11 +70,10 @@ class HomeActivity : AppCompatActivity() {
                 putExtra(DetailActivity.EXTRA_PHOTO_URL, story.photoUrl)
             }
 
-            // Shared Element Animation menggunakan holder
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
-                holder.binding.ivItemPhoto, // Elemen gambar dari ViewHolder
-                "storyImage" // Nama transisi sesuai XML
+                holder.binding.ivItemPhoto,
+                "storyImage"
             )
             startActivity(intent, options.toBundle())
         }
@@ -100,7 +85,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupFab() {
-        // Tombol tambah cerita
         binding.fabAddStory.setOnClickListener {
             val intent = Intent(this, AddStoryActivity::class.java)
             startActivity(intent)
@@ -111,18 +95,13 @@ class HomeActivity : AppCompatActivity() {
         showLoading(true)
         lifecycleScope.launch {
             try {
-                // Ambil token dari DataStore secara asynchronous
                 val token = "Bearer ${getToken()}"
-
-                // Panggil API untuk mendapatkan daftar cerita
                 ApiConfig.getApiService().getStories(token).enqueue(object : Callback<StoryResponse> {
                     override fun onResponse(call: Call<StoryResponse>, response: Response<StoryResponse>) {
                         showLoading(false)
                         if (response.isSuccessful) {
                             val stories = response.body()?.listStory ?: emptyList()
                             storyAdapter.updateStories(stories)
-
-                            // Panggil animasi
                             animateRecyclerView()
                         } else {
                             showToast("Gagal memuat data: ${response.message()}")
@@ -143,29 +122,23 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private suspend fun getToken(): String {
-        // Mengambil token dari DataStore
         return UserPreference.getInstance(applicationContext).getToken().first() ?: ""
     }
 
     private fun showLoading(isLoading: Boolean) {
-        // Menampilkan atau menyembunyikan ProgressBar
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     private fun showToast(message: String) {
-        // Menampilkan pesan Toast
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun animateRecyclerView() {
-        // Set alpha awal RecyclerView menjadi 0
         binding.rvStories.alpha = 0f
-
-        // Mulai animasi fade-in
         binding.rvStories.animate()
-            .alpha(1f) // Set alpha akhir menjadi 1
-            .setDuration(1000) // Durasi animasi 1 detik
-            .setListener(null) // Pastikan tidak ada listener tambahan
+            .alpha(1f)
+            .setDuration(1000)
+            .setListener(null)
             .start()
     }
 

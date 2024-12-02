@@ -10,21 +10,20 @@ import com.example.app_story.model.Story
 
 class StoryAdapter(
     private var stories: List<Story>,
-    private val onItemClick: (Story, StoryViewHolder) -> Unit // Callback untuk item klik dengan ViewHolder
+    private val onItemClick: (Story, StoryViewHolder) -> Unit
 ) : RecyclerView.Adapter<StoryAdapter.StoryViewHolder>() {
 
     class StoryViewHolder(
-        val binding: ItemStoryBinding // Perlu akses langsung ke elemen ViewHolder
+        val binding: ItemStoryBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(story: Story, onItemClick: (Story, StoryViewHolder) -> Unit) {
             binding.tvItemName.text = story.name
             Glide.with(binding.ivItemPhoto.context)
                 .load(story.photoUrl)
-                .placeholder(R.drawable.ic_placeholder) // Placeholder untuk gambar
+                .placeholder(R.drawable.ic_placeholder)
                 .into(binding.ivItemPhoto)
 
-            // Listener klik item, kirim ViewHolder
             binding.root.setOnClickListener {
                 onItemClick(story, this)
             }
@@ -42,7 +41,6 @@ class StoryAdapter(
 
     override fun getItemCount(): Int = stories.size
 
-    // Metode untuk memperbarui data cerita
     fun updateStories(newStories: List<Story>) {
         stories = newStories
         notifyDataSetChanged()

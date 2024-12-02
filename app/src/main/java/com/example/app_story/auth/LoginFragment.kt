@@ -35,17 +35,14 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Inisialisasi UserPreference
         userPreference = UserPreference.getInstance(requireContext())
 
-        // Handle Login Button Click
         binding.btnLogin.setOnClickListener {
             val email = binding.edLoginEmail.text.toString().trim()
             val password = binding.edLoginPassword.text.toString().trim()
 
             if (validateInput(email, password)) {
-                showLoading(true) // Tampilkan ProgressBar dan nonaktifkan tombol
+                showLoading(true)
                 performLogin(email, password)
             }
         }
@@ -58,7 +55,7 @@ class LoginFragment : Fragment() {
             binding.edLoginEmail.error = "Email tidak boleh kosong"
             isValid = false
         } else if (binding.edLoginEmail.error != null) {
-            isValid = false // Error dari CustomEmailEditText
+            isValid = false
         }
 
         if (password.isEmpty()) {
@@ -72,7 +69,7 @@ class LoginFragment : Fragment() {
     private fun performLogin(email: String, password: String) {
         ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                showLoading(false) // Sembunyikan ProgressBar dan aktifkan tombol
+                showLoading(false)
                 if (response.isSuccessful) {
                     val loginResponse = response.body()
                     if (loginResponse != null && !loginResponse.error) {
@@ -88,7 +85,6 @@ class LoginFragment : Fragment() {
                                 Toast.LENGTH_SHORT
                             ).show()
 
-                            // Pindah ke HomeActivity
                             val intent = Intent(requireContext(), HomeActivity::class.java)
                             intent.flags =
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -112,7 +108,7 @@ class LoginFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                showLoading(false) // Sembunyikan ProgressBar dan aktifkan tombol
+                showLoading(false) //
                 Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -121,10 +117,10 @@ class LoginFragment : Fragment() {
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
-            binding.btnLogin.isEnabled = false // Nonaktifkan tombol login
+            binding.btnLogin.isEnabled = false
         } else {
             binding.progressBar.visibility = View.GONE
-            binding.btnLogin.isEnabled = true // Aktifkan tombol login
+            binding.btnLogin.isEnabled = true
         }
     }
 

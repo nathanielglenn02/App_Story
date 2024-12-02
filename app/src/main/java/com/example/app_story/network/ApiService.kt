@@ -26,18 +26,16 @@ interface ApiService {
         @Field("password") password: String
     ): Call<LoginResponse>
 
-    // Endpoint untuk mendapatkan daftar cerita
     @GET("stories")
     fun getStories(
-        @Header("Authorization") token: String // Header untuk autentikasi
+        @Header("Authorization") token: String
     ): Call<StoryResponse>
 
-    // Endpoint untuk meng-upload cerita (deskripsi dan foto)
     @Multipart
     @POST("stories")
     fun addStory(
-        @Header("Authorization") token: String, // Token autentikasi
-        @Part("description") description: RequestBody, // Deskripsi cerita
-        @Part photo: MultipartBody.Part, // Foto cerita
+        @Header("Authorization") token: String,
+        @Part("description") description: RequestBody,
+        @Part photo: MultipartBody.Part,
     ): Call<UploadResponse>
 }

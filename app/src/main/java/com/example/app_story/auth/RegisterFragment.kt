@@ -31,20 +31,17 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Handle Register Button Click
         binding.btnRegister.setOnClickListener {
             val name = binding.edRegisterName.text.toString().trim()
             val email = binding.edRegisterEmail.text.toString().trim()
             val password = binding.edRegisterPassword.text.toString().trim()
 
-            // Validasi input sebelum registrasi
             if (validateInput(name, email, password)) {
-                showLoading(true) // Tampilkan ProgressBar
+                showLoading(true)
                 performRegistration(name, email, password)
             }
         }
 
-        // Navigate back to LoginFragment
         binding.tvLoginLink.setOnClickListener {
             findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
@@ -53,21 +50,18 @@ class RegisterFragment : Fragment() {
     private fun validateInput(name: String, email: String, password: String): Boolean {
         var isValid = true
 
-        // Validasi nama
         if (name.isEmpty()) {
             binding.edRegisterName.error = "Nama tidak boleh kosong"
             isValid = false
         }
 
-        // Validasi email menggunakan error dari CustomEmailEditText
         if (email.isEmpty()) {
             binding.edRegisterEmail.error = "Email tidak boleh kosong"
             isValid = false
         } else if (binding.edRegisterEmail.error != null) {
-            isValid = false // Error sudah ditampilkan oleh CustomEmailEditText
+            isValid = false
         }
 
-        // Validasi password
         if (password.isEmpty()) {
             binding.edRegisterPassword.error = "Password tidak boleh kosong"
             isValid = false
@@ -86,7 +80,7 @@ class RegisterFragment : Fragment() {
                 call: Call<RegisterResponse>,
                 response: Response<RegisterResponse>
             ) {
-                showLoading(false) // Sembunyikan ProgressBar
+                showLoading(false)
                 if (response.isSuccessful) {
                     val registerResponse = response.body()
                     if (registerResponse != null && !registerResponse.error) {
@@ -109,7 +103,7 @@ class RegisterFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                showLoading(false) // Sembunyikan ProgressBar
+                showLoading(false)
                 Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -118,10 +112,10 @@ class RegisterFragment : Fragment() {
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
-            binding.btnRegister.isEnabled = false // Nonaktifkan tombol selama proses
+            binding.btnRegister.isEnabled = false
         } else {
             binding.progressBar.visibility = View.GONE
-            binding.btnRegister.isEnabled = true // Aktifkan kembali tombol
+            binding.btnRegister.isEnabled = true
         }
     }
 

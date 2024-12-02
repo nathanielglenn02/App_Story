@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar untuk menampilkan menu -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -38,7 +37,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Floating Action Button untuk menambah cerita -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddStory"
         android:layout_width="wrap_content"
@@ -52,7 +50,6 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <!-- FrameLayout untuk menampung LoginFragment saat logout -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:layout_width="0dp"

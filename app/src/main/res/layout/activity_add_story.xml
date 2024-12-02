@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- ImageView untuk Menampilkan Gambar Placeholder -->
     <ImageView
         android:id="@+id/ivDefaultImage"
         android:layout_width="0dp"
@@ -18,7 +17,6 @@
         tools:layout_editor_absoluteY="16dp"
         tools:ignore="MissingConstraints" />
 
-    <!-- Tombol Camera (Kiri) -->
     <Button
         android:id="@+id/btnCamera"
         android:layout_width="0dp"
@@ -29,7 +27,6 @@
         app:layout_constraintEnd_toStartOf="@id/btnGallery"
         android:layout_marginTop="16dp"/>
 
-    <!-- Tombol Gallery (Kanan) -->
     <Button
         android:id="@+id/btnGallery"
         android:layout_width="0dp"
@@ -40,7 +37,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Label untuk Deskripsi Cerita -->
     <TextView
         android:id="@+id/tvDescriptionLabel"
         android:layout_width="wrap_content"
@@ -51,7 +47,6 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="32dp"/>
 
-    <!-- Input Deskripsi Cerita -->
     <EditText
         android:id="@+id/etDescription"
         android:layout_width="0dp"
@@ -63,7 +58,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Button untuk Upload Cerita -->
     <Button
         android:id="@+id/btnUpload"
         android:layout_width="0dp"
@@ -74,7 +68,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- ProgressBar untuk Loading -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"

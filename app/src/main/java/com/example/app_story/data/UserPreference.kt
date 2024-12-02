@@ -15,7 +15,7 @@ class UserPreference private constructor(private val dataStore: androidx.datasto
 
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("token")
-        private val NAME_KEY = stringPreferencesKey("name") // Key untuk nama pengguna
+        private val NAME_KEY = stringPreferencesKey("name")
         private val LOGIN_STATE_KEY = booleanPreferencesKey("is_logged_in")
 
         @Volatile
@@ -30,48 +30,30 @@ class UserPreference private constructor(private val dataStore: androidx.datasto
         }
     }
 
-    // Menyimpan token, nama pengguna, dan status login
     suspend fun saveUserData(token: String, name: String) {
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
             preferences[NAME_KEY] = name
-            preferences[LOGIN_STATE_KEY] = true // Menandakan pengguna sudah login
+            preferences[LOGIN_STATE_KEY] = true
         }
     }
 
-    // Mendapatkan token
     fun getToken(): Flow<String?> {
         return dataStore.data.map { preferences ->
             preferences[TOKEN_KEY]
         }
     }
 
-    // Mendapatkan nama pengguna
     fun getName(): Flow<String?> {
         return dataStore.data.map { preferences ->
             preferences[NAME_KEY]
         }
     }
 
-    // Menyimpan hanya token (misalnya untuk kasus token refresh)
-    suspend fun saveToken(token: String) {
-        dataStore.edit { preferences ->
-            preferences[TOKEN_KEY] = token
-            preferences[LOGIN_STATE_KEY] = true // Menandakan pengguna sudah login
-        }
-    }
-
-    // Menghapus token, nama pengguna, dan status login (untuk logout)
     suspend fun clearUserData() {
         dataStore.edit { preferences ->
-            preferences.clear() // Menghapus seluruh data, termasuk status login
+            preferences.clear()
         }
     }
 
-    // Memeriksa apakah pengguna sudah login
-    fun isLoggedIn(): Flow<Boolean> {
-        return dataStore.data.map { preferences ->
-            preferences[LOGIN_STATE_KEY] ?: false // Default false jika belum login
-        }
-    }
 }

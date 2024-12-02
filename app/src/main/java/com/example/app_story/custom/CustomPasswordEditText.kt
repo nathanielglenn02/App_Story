@@ -18,7 +18,6 @@ class CustomPasswordEditText @JvmOverloads constructor(
     }
 
     private fun setupListener() {
-        // Tambahkan listener untuk memantau perubahan teks
         this.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -32,9 +31,9 @@ class CustomPasswordEditText @JvmOverloads constructor(
 
     private fun validatePassword(password: CharSequence?) {
         if (password.isNullOrEmpty() || password.length < 8) {
-            error = context.getString(R.string.password_error_message) // Pesan error jika kurang dari 8 karakter
+            error = context.getString(R.string.password_error_message)
         } else {
-            error = null // Hapus error jika valid
+            error = null
         }
     }
 }
