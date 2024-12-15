@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,9 @@ import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.ActivityHomeBinding
 import com.example.app_story.model.StoryResponse
 import com.example.app_story.network.ApiConfig
+import com.example.app_story.repository.StoryRepository
+import com.example.app_story.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -25,13 +29,18 @@ import retrofit2.Response
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var storyAdapter: StoryAdapter
+    private lateinit var storyAdapter: StoryPagingAdapter
+
+    private val homeViewModel: HomeViewModel by viewModels {
+        HomeViewModel.Factory(StoryRepository(ApiConfig.getApiService()))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
         setupRecyclerView()
         setupFab()
         loadStories()
@@ -63,26 +72,48 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        storyAdapter = StoryAdapter(emptyList()) { story, holder ->
+        storyAdapter = StoryPagingAdapter { story, sharedElementView, transitionName ->
             val intent = Intent(this, DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_NAME, story.name)
                 putExtra(DetailActivity.EXTRA_DESCRIPTION, story.description)
                 putExtra(DetailActivity.EXTRA_PHOTO_URL, story.photoUrl)
+                putExtra(DetailActivity.EXTRA_TRANSITION_NAME, transitionName)
             }
 
             val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                 this,
-                holder.binding.ivItemPhoto,
-                "storyImage"
+                sharedElementView,
+                transitionName
             )
             startActivity(intent, options.toBundle())
         }
 
         binding.rvStories.apply {
             layoutManager = LinearLayoutManager(this@HomeActivity)
-            adapter = storyAdapter
+            adapter = storyAdapter.withLoadStateFooter(
+                footer = StoryLoadStateAdapter { storyAdapter.retry() }
+            )
+        }
+
+        // LoadStateListener untuk menampilkan progress bar saat loading
+        storyAdapter.addLoadStateListener { loadState ->
+            if (loadState.source.refresh is androidx.paging.LoadState.Loading ||
+                loadState.source.append is androidx.paging.LoadState.Loading
+            ) {
+                showLoading(true) // Tampilkan progress bar
+            } else {
+                showLoading(false) // Sembunyikan progress bar
+            }
+
+            // Tangani error jika ada
+            val errorState = loadState.source.refresh as? androidx.paging.LoadState.Error
+            errorState?.let {
+                showToast("Error: ${it.error.localizedMessage}")
+            }
         }
     }
+
+
 
     private fun setupFab() {
         binding.fabAddStory.setOnClickListener {
@@ -92,38 +123,40 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun loadStories() {
-        showLoading(true)
         lifecycleScope.launch {
-            try {
-                val token = "Bearer ${getToken()}"
-                ApiConfig.getApiService().getStories(token).enqueue(object : Callback<StoryResponse> {
-                    override fun onResponse(call: Call<StoryResponse>, response: Response<StoryResponse>) {
-                        showLoading(false)
-                        if (response.isSuccessful) {
-                            val stories = response.body()?.listStory ?: emptyList()
-                            storyAdapter.updateStories(stories)
-                            animateRecyclerView()
-                        } else {
-                            showToast("Gagal memuat data: ${response.message()}")
-                        }
-                    }
+            val token = "Bearer ${getToken()}"
+            homeViewModel.getStories(token).collectLatest { pagingData ->
+                storyAdapter.submitData(pagingData)
+            }
+        }
 
+        storyAdapter.addLoadStateListener { loadState ->
+            // Handle loading untuk refresh atau append
+            val isLoading = loadState.source.append is androidx.paging.LoadState.Loading ||
+                    loadState.source.refresh is androidx.paging.LoadState.Loading
+            showLoading(isLoading)
 
-                    override fun onFailure(call: Call<StoryResponse>, t: Throwable) {
-                        showLoading(false)
-                        showToast("Error: ${t.message}")
-                    }
-                })
-            } catch (e: Exception) {
-                showLoading(false)
-                showToast("Error: ${e.message}")
+            // Panggil animasi saat data berhasil dimuat
+            if (loadState.source.refresh is androidx.paging.LoadState.NotLoading &&
+                loadState.append.endOfPaginationReached) {
+                animateRecyclerView()
+            }
+
+            // Handle error
+            val errorState = loadState.source.append as? androidx.paging.LoadState.Error
+            errorState?.let {
+                showToast("Error: ${it.error.localizedMessage}")
             }
         }
     }
 
+
+
+
     private suspend fun getToken(): String {
         return UserPreference.getInstance(applicationContext).getToken().first() ?: ""
     }
+
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE

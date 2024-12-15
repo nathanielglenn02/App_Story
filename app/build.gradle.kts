@@ -62,8 +62,11 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.paging:paging-runtime:3.2.0") // Versi terbaru
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2") // Lifecycle ViewModel
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
-
+    implementation(kotlin("script-runtime"))
 
 
 }

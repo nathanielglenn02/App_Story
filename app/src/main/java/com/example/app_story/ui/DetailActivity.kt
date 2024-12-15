@@ -14,12 +14,17 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.ivDetailPhoto.transitionName = "storyImage"
 
+        // Ambil TransitionName dari Intent
+        val transitionName = intent.getStringExtra(EXTRA_TRANSITION_NAME)
+        binding.ivDetailPhoto.transitionName = transitionName
+
+        // Ambil data dari Intent
         val name = intent.getStringExtra(EXTRA_NAME)
         val description = intent.getStringExtra(EXTRA_DESCRIPTION)
         val photoUrl = intent.getStringExtra(EXTRA_PHOTO_URL)
 
+        // Tampilkan data
         binding.tvDetailName.text = name
         binding.tvDetailDescription.text = description
         Glide.with(this)
@@ -28,10 +33,10 @@ class DetailActivity : AppCompatActivity() {
             .into(binding.ivDetailPhoto)
     }
 
-
     companion object {
         const val EXTRA_NAME = "extra_name"
         const val EXTRA_DESCRIPTION = "extra_description"
         const val EXTRA_PHOTO_URL = "extra_photo_url"
+        const val EXTRA_TRANSITION_NAME = "extra_transition_name"
     }
 }
