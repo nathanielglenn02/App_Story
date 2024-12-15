@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.navigation.fragment)
+    implementation(libs.junit.junit)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,7 +73,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 
     // Mockk untuk mocking
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.13.7") // Gunakan versi terbaru
 
     // Coroutines Test untuk coroutine context
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
