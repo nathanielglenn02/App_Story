@@ -5,4 +5,8 @@
         android:id="@+id/action_logout"
         android:title="Logout"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_maps"
+        android:title="Maps"
+        app:showAsAction="ifRoom" />
 </menu>

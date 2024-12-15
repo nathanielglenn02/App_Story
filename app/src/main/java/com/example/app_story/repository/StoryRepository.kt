@@ -6,7 +6,10 @@ import androidx.paging.PagingData
 import com.example.app_story.model.Story
 import com.example.app_story.network.ApiService
 import com.example.app_story.paging.StoryPagingSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class StoryRepository(private val apiService: ApiService) {
 
@@ -19,4 +22,10 @@ class StoryRepository(private val apiService: ApiService) {
             pagingSourceFactory = { StoryPagingSource(apiService, token) }
         ).flow
     }
+
+    fun getStoriesWithLocation(token: String): Flow<List<Story>> = flow {
+        val response = apiService.getStoriesWithLocation(token)
+        emit(response.listStory) // Emit list cerita dengan lokasi
+    }.flowOn(Dispatchers.IO)
+
 }

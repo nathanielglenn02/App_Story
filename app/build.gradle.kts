@@ -65,6 +65,24 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.2.0") // Versi terbaru
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2") // Lifecycle ViewModel
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.maps.android:android-maps-utils:3.8.0")
+
+    // JUnit untuk Unit Test
+    testImplementation("junit:junit:4.13.2")
+
+    // Mockk untuk mocking
+    testImplementation("io.mockk:mockk:1.12.0")
+
+    // Coroutines Test untuk coroutine context
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
+    // Paging 3 Test untuk unit testing PagingData
+    testImplementation("androidx.paging:paging-common-ktx:3.1.1")
+
+    // AndroidX Core Testing untuk LiveData
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+
 
     implementation(kotlin("script-runtime"))
 

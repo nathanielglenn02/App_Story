@@ -57,6 +57,11 @@ class HomeActivity : AppCompatActivity() {
                 logout()
                 true
             }
+            R.id.action_maps -> {
+                val intent = Intent(this, MapsActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

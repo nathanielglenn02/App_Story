@@ -24,5 +24,12 @@ data class Story(
     val description: String,
 
     @SerializedName("photoUrl")
-    val photoUrl: String
+    val photoUrl: String,
+
+    @SerializedName("lat")
+    val lat: Double? = null,
+
+    @SerializedName("lon")
+    val lon: Double? = null
+
 )
