@@ -9,6 +9,12 @@
     <string name="email_hint">Masukkan Email</string>
     <string name="belum_punya_akun_register">Belum punya akun? Register</string>
     <string name="google_maps_api_key">AIzaSyD315GGQgCdib7nlxyN6u66NOkYL5zSpWw</string>
+    <string name="kamera">Kamera</string>
+    <string name="galeri">Galeri</string>
+    <string name="deskripsi_cerita">Deskripsi Cerita</string>
+    <string name="masukkan_deskripsi_cerita">Masukkan deskripsi cerita</string>
+    <string name="tambahkan_lokasi_saat_ini">Tambahkan lokasi saat ini</string>
+    <string name="upload_cerita">Upload Cerita</string>
 
 
 </resources>

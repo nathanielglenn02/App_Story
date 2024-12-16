@@ -25,7 +25,7 @@ class StoryRepository(private val apiService: ApiService) {
 
     fun getStoriesWithLocation(token: String): Flow<List<Story>> = flow {
         val response = apiService.getStoriesWithLocation(token)
-        emit(response.listStory) // Emit list cerita dengan lokasi
+        emit(response.listStory)
     }.flowOn(Dispatchers.IO)
 
 }

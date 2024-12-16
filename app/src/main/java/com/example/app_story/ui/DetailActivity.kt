@@ -14,17 +14,11 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Ambil TransitionName dari Intent
         val transitionName = intent.getStringExtra(EXTRA_TRANSITION_NAME)
         binding.ivDetailPhoto.transitionName = transitionName
-
-        // Ambil data dari Intent
         val name = intent.getStringExtra(EXTRA_NAME)
         val description = intent.getStringExtra(EXTRA_DESCRIPTION)
         val photoUrl = intent.getStringExtra(EXTRA_PHOTO_URL)
-
-        // Tampilkan data
         binding.tvDetailName.text = name
         binding.tvDetailDescription.text = description
         Glide.with(this)

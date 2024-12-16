@@ -12,8 +12,8 @@ class StoryPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Story> {
         return try {
-            val page = params.key ?: 1 // Default page pertama
-            val size = params.loadSize // Ukuran data yang dimuat
+            val page = params.key ?: 1
+            val size = params.loadSize
             val response = apiService.getStories(token, page, size)
 
             val stories = response.listStory

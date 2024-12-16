@@ -68,6 +68,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.maps.android:android-maps-utils:3.8.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
 
     // JUnit untuk Unit Test
     testImplementation("junit:junit:4.13.2")

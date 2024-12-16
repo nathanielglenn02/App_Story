@@ -10,21 +10,18 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app_story.MainActivity
 import com.example.app_story.R
 import com.example.app_story.data.UserPreference
 import com.example.app_story.databinding.ActivityHomeBinding
-import com.example.app_story.model.StoryResponse
 import com.example.app_story.network.ApiConfig
 import com.example.app_story.repository.StoryRepository
 import com.example.app_story.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class HomeActivity : AppCompatActivity() {
 
@@ -100,25 +97,20 @@ class HomeActivity : AppCompatActivity() {
             )
         }
 
-        // LoadStateListener untuk menampilkan progress bar saat loading
         storyAdapter.addLoadStateListener { loadState ->
             if (loadState.source.refresh is androidx.paging.LoadState.Loading ||
                 loadState.source.append is androidx.paging.LoadState.Loading
             ) {
-                showLoading(true) // Tampilkan progress bar
+                showLoading(true)
             } else {
-                showLoading(false) // Sembunyikan progress bar
+                showLoading(false)
             }
-
-            // Tangani error jika ada
             val errorState = loadState.source.refresh as? androidx.paging.LoadState.Error
             errorState?.let {
                 showToast("Error: ${it.error.localizedMessage}")
             }
         }
     }
-
-
 
     private fun setupFab() {
         binding.fabAddStory.setOnClickListener {
@@ -136,27 +128,27 @@ class HomeActivity : AppCompatActivity() {
         }
 
         storyAdapter.addLoadStateListener { loadState ->
-            // Handle loading untuk refresh atau append
-            val isLoading = loadState.source.append is androidx.paging.LoadState.Loading ||
-                    loadState.source.refresh is androidx.paging.LoadState.Loading
-            showLoading(isLoading)
-
-            // Panggil animasi saat data berhasil dimuat
-            if (loadState.source.refresh is androidx.paging.LoadState.NotLoading &&
-                loadState.append.endOfPaginationReached) {
-                animateRecyclerView()
-            }
-
-            // Handle error
-            val errorState = loadState.source.append as? androidx.paging.LoadState.Error
-            errorState?.let {
-                showToast("Error: ${it.error.localizedMessage}")
+            if (loadState.refresh is LoadState.Loading) {
+                showLoading(true)
+            } else {
+                showLoading(false)
+                val errorState = loadState.refresh as? LoadState.Error
+                errorState?.let {
+                    showToast("Error: ${it.error.localizedMessage}")
+                }
+                if (storyAdapter.itemCount == 0) {
+                    showEmptyState(true)
+                } else {
+                    showEmptyState(false)
+                    animateRecyclerView()
+                }
             }
         }
+
     }
-
-
-
+    private fun showEmptyState(isEmpty: Boolean) {
+        binding.tvEmptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+    }
 
     private suspend fun getToken(): String {
         return UserPreference.getInstance(applicationContext).getToken().first() ?: ""

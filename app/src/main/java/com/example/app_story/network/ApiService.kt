@@ -46,5 +46,7 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Part("description") description: RequestBody,
         @Part photo: MultipartBody.Part,
+        @Part("lat") lat: Double?,
+        @Part("lon") lon: Double?
     ): Call<UploadResponse>
 }

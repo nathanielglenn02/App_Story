@@ -44,12 +44,6 @@ class UserPreference private constructor(private val dataStore: androidx.datasto
         }
     }
 
-    fun getName(): Flow<String?> {
-        return dataStore.data.map { preferences ->
-            preferences[NAME_KEY]
-        }
-    }
-
     suspend fun clearUserData() {
         dataStore.edit { preferences ->
             preferences.clear()

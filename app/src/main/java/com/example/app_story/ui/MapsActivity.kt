@@ -1,6 +1,8 @@
 package com.example.app_story.ui
 
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +17,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -33,16 +36,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Inisialisasi Map
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        applyCustomMapStyle()
         loadStoryMarkers()
+    }
+
+    private fun applyCustomMapStyle() {
+        try {
+            val success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style)
+            )
+            if (!success) {
+                Log.e("MapsActivity", "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e("MapsActivity", "Can't find style. Error: ", e)
+        }
     }
 
     private fun loadStoryMarkers() {
@@ -60,7 +74,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             .snippet(story.description)
                     )
                 }
-                // Pindahkan kamera ke lokasi pertama jika ada
                 stories.firstOrNull()?.let {
                     val firstLocation = LatLng(it.lat ?: 0.0, it.lon ?: 0.0)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 5f))
@@ -68,7 +81,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
 
     private suspend fun getToken(): String {
         return com.example.app_story.data.UserPreference.getInstance(applicationContext).getToken().first() ?: ""
