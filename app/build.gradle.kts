@@ -71,6 +71,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
 
+    testImplementation("org.robolectric:robolectric:4.10.3")
+
+    testImplementation("androidx.paging:paging-testing:3.2.1")
     // JUnit untuk Unit Test
     testImplementation("junit:junit:4.13.2")
 

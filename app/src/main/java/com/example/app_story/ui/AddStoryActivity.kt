@@ -85,8 +85,12 @@ class AddStoryActivity : AppCompatActivity() {
     private val cameraResult = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
             binding.ivDefaultImage.setImageURI(selectedImageUri)
+        } else {
+            selectedImageUri = null
+            Toast.makeText(this, "Pengambilan gambar dibatalkan", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private val galleryResult = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
@@ -96,6 +100,11 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private fun uploadStory(description: String, token: String) {
+        if (selectedImageUri == null) {
+            Toast.makeText(this, "Tidak ada gambar yang dipilih", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         binding.progressBar.visibility = View.VISIBLE
         val imageFile = getFileFromUri(selectedImageUri!!)
         val requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile)
@@ -126,6 +135,7 @@ class AddStoryActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun getTempUriForCamera(): Uri {
         val file = File(externalCacheDir, "temp_photo.jpg")
